@@ -1,0 +1,23 @@
+{
+  "name": "es6-brown-bag",
+  "version": "1.0.0",
+  "description": "ES6 Brown Bag",
+  "main": "test.js",
+  "dependencies": {
+    "babel": "^5.2.9",
+    "babel-core": "^5.2.9",
+    "babel-loader": "^5.0.0",
+    "brace": "^0.5.1",
+    "react": "^0.13.2",
+    "react-ace": "^2.0.0",
+    "underscore": "^1.8.3",
+    "webpack": "^1.8.11",
+    "webpack-dev-server": "^1.8.2"
+  },
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "Brandon Tilley",
+  "license": "MIT",
+  "private": true
+}
