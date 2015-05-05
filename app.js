@@ -5,13 +5,11 @@ import { Block, Flex } from "./components/layout";
 import AceEditor from "./components/ace_editor";
 import examples from "./examples";
 
-console.log(examples);
-
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      jsCode: "!",
+      jsCode: "",
       sourceMaps: true,
       autoRun: false,
       error: null,
@@ -28,6 +26,25 @@ class App extends React.Component {
     this.handleRunCodeClick = this.handleRunCodeClick.bind(this);
     this.debouncedDisplayErrors = _.debounce(this.displayErrors, 1000);
     this.debouncedAutoRunCode = _.debounce(this.autoRunCode, 1000);
+  }
+
+  componentWillMount() {
+    const savedCode = window.localStorage.getItem("es6-brownbag-saved-code");
+    if (savedCode) {
+      this.setState({jsCode: savedCode});
+      setTimeout(this.displayErrors.bind(this), 0);
+    }
+  }
+
+  componentDidMount() {
+    const editor = this.refs.editor.editor;
+    editor.commands.addCommand({
+      name: "Run Code",
+      bindKey: { mac: "Command-Enter", win: "Ctrl-Enter" },
+      exec: (editor) => {
+        this.handleRunCodeClick();
+      }
+    });
   }
 
   render() {
@@ -69,25 +86,6 @@ class App extends React.Component {
         </Block>
       </Flex>
     );
-  }
-
-  componentWillMount() {
-    const savedCode = window.localStorage.getItem("es6-brownbag-saved-code");
-    if (savedCode) {
-      this.setState({jsCode: savedCode});
-      setTimeout(this.displayErrors.bind(this), 0);
-    }
-  }
-
-  componentDidMount() {
-    const editor = this.refs.editor.editor;
-    editor.commands.addCommand({
-      name: "Run Code",
-      bindKey: { mac: "Command-Enter", win: "Ctrl-Enter" },
-      exec: (editor) => {
-        this.handleRunCodeClick();
-      }
-    });
   }
 
   handleSelectDemoChange(e) {
