@@ -5,7 +5,7 @@ import _js from "brace/mode/javascript";
 import _github from "brace/theme/github";
 import _languageTools from "brace/ext/language_tools";
 
-import { Block } from "./layout";
+import { Flex } from "./layout";
 
 class AceEditor extends React.Component {
   constructor(props) {
@@ -14,13 +14,10 @@ class AceEditor extends React.Component {
   }
 
   render() {
-    const divStyle = {
-      width: this.props.width,
-      height: this.props.height
-    };
+    const style = this.props.style || {};
 
     return (
-      <Block id={this.props.name} onChange={this.onChange} style={divStyle}></Block>
+      <Flex basis="100%" id={this.props.name} onChange={this.onChange} style={style}></Flex>
     );
   }
 
@@ -37,7 +34,7 @@ class AceEditor extends React.Component {
     this.editor.setTheme('ace/theme/' + this.props.theme);
     this.editor.setFontSize(this.props.fontSize);
     this.editor.on('change', this.onChange);
-    this.editor.setValue(this.props.value);
+    this.editor.setValue(this.props.value, 1);
     this.editor.renderer.setShowGutter(this.props.showGutter);
     this.editor.setOption('maxLines', this.props.maxLines);
     this.editor.setOption('readOnly', this.props.readOnly);
@@ -49,7 +46,7 @@ class AceEditor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.editor.getValue() !== nextProps.value) {
-      this.editor.setValue(nextProps.value);
+      this.editor.setValue(nextProps.value, 1);
     }
   }
 
