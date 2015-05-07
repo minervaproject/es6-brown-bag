@@ -12,6 +12,7 @@ class App extends React.Component {
       jsCode: "",
       sourceMaps: true,
       autoRun: false,
+      showCompiled: false,
       error: null,
       demo: ""
     };
@@ -21,10 +22,12 @@ class App extends React.Component {
     this.handleSelectDemoChange = this.handleSelectDemoChange.bind(this);
     this.handleAutoRunChange = this.handleAutoRunChange.bind(this);
     this.handleSourceMapChange = this.handleSourceMapChange.bind(this);
+    this.handleShowCompiledChange = this.handleShowCompiledChange.bind(this);
     this.handleCodeChange = this.handleCodeChange.bind(this);
     this.handleLoadDemoClick = this.handleLoadDemoClick.bind(this);
     this.handleRunCodeClick = this.handleRunCodeClick.bind(this);
     this.debouncedDisplayErrors = _.debounce(this.displayErrors, 1000);
+    this.debouncedDisplayCompiledCode = _.debounce(this.displayCompiledCode, 1000);
     this.debouncedAutoRunCode = _.debounce(this.autoRunCode, 1000);
   }
 
@@ -52,6 +55,16 @@ class App extends React.Component {
       padding: 10
     };
 
+    const compiledBlockStyle = {
+      width: "100%",
+      height: "100%",
+      display: "none"
+    };
+
+    if (this.state.showCompiled) {
+      compiledBlockStyle.display = "block";
+    }
+
     return (
       <Flex style={{width: "100%", height: "100%"}} direction="column">
         <Flex>
@@ -63,7 +76,7 @@ class App extends React.Component {
               return <option value={key} key={key}>{examples[key]}</option>;
             })}
             </select>{" "}
-            <button onClick={this.handleLoadDemoClick} disabled={!this.state.demo}>Go</button>
+            <button onClick={this.handleLoadDemoClick} disabled={!this.state.demo}>Load</button>
           </Block>
           <Block style={topDivStyle}>
             <label>
@@ -76,14 +89,23 @@ class App extends React.Component {
             </label>
           </Block>
           <Block style={topDivStyle}>
+            <label>
+              <input type="checkbox" checked={this.state.showCompiled} onChange={this.handleShowCompiledChange} /> Show Transpiled ES5
+            </label>
+          </Block>
+          <Block style={topDivStyle}>
             <button onClick={this.handleRunCodeClick}>Run</button>
           </Block>
         </Flex>
-        <AceEditor ref="editor" mode="javascript" theme="github" name="es6-editor" width="100%" height="100%"
-                   value={this.state.jsCode} onChange={this.handleCodeChange} />
-        <Block style={{height: 50, padding: 10, color: "red"}}>
+        <Flex direction="row" basis="100%" style={{height: "100%"}}>
+          <AceEditor ref="editor" mode="javascript" theme="github" name="es6-editor" width="100%" height="100%"
+                     value={this.state.jsCode} onChange={this.handleCodeChange} />
+          <AceEditor ref="readOnlyEditor" mode="javascript" theme="github" name="es6-editor-compiled" width="100%" height="100%"
+                     value={this.state.compiledCode} readOnly={true} style={compiledBlockStyle} />
+        </Flex>
+        <Flex basis="40px" style={{padding: 10}}>
           {this.state.error}
-        </Block>
+        </Flex>
       </Flex>
     );
   }
@@ -110,9 +132,17 @@ class App extends React.Component {
     this.setState({sourceMaps: e.target.checked});
   }
 
+  handleShowCompiledChange(e) {
+    this.setState({showCompiled: e.target.checked}, () => {
+      this.refs.editor.editor.resize();
+      this.refs.readOnlyEditor.editor.resize();
+    });
+  }
+
   handleCodeChange(code) {
     this.setState({jsCode: code});
     this.debouncedDisplayErrors();
+    this.debouncedDisplayCompiledCode();
     window.localStorage.setItem("es6-brownbag-saved-code", code);
 
     if (this.state.autoRun) {
@@ -120,12 +150,12 @@ class App extends React.Component {
     }
   }
 
-  compileCode(code) {
+  compileCode(code, useSourceMap = true) {
     try {
       const js = babel.transform(this.state.jsCode, {
         ast: false,
         filename: "repl-" + this.runCount,
-        sourceMaps: this.state.sourceMaps ? "inline" : false
+        sourceMaps: this.state.sourceMaps && useSourceMap ? "inline" : false
       });
       return { code: js.code, error: null };
     } catch (e) {
@@ -136,6 +166,13 @@ class App extends React.Component {
   displayErrors() {
     const { code, error } = this.compileCode(this.state.jsCode);
     this.setState({ error });
+  }
+
+  displayCompiledCode() {
+    const { code, error } = this.compileCode(this.state.jsCode, false);
+    if (code) {
+      this.setState({compiledCode: code});
+    }
   }
 
   handleRunCodeClick() {
