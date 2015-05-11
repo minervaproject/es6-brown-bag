@@ -1,6 +1,25 @@
 const examples = {
+  "sanity-check.js": "Sanity Check",
+  "template-strings.js": "Template Strings",
+  "block-scoping.js": "Block Scoping",
   "function-loop.js": "Nick's Interview Problem",
-  "demo.js": "Demo Example"
+  "constants.js": "Constants",
+  "destructuring.js": "Destructuring",
+  "destructuring-2.js": "More Destructuring",
+  "rest.js": "Rest",
+  "spread.js": "Spread",
+  "default-args.js": "Default Arguments",
+  "default-expression.js": "Default Argument Expressions",
+  "arrow-functions.js": "Arrow Functions",
+  "arrow-functions-2.js": "More Arrow Functions",
+  "computed-properties.js": "Computed Properties",
+  "symbols.js": "Symbols",
+  "for-of.js": "For/Of",
+  "custom-iterators.js": "Custom Iterators",
+  "classes.js": "Classes",
+  "maps.js": "Maps",
+  "promises.js": "Promises",
+  "async-await.js": "Async/Await",
 };
 
 export default examples;
