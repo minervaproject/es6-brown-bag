@@ -103,7 +103,7 @@ class App extends React.Component {
           <AceEditor ref="readOnlyEditor" mode="javascript" theme="github" name="es6-editor-compiled" width="100%" height="100%"
                      value={this.state.compiledCode} readOnly={true} style={compiledBlockStyle} />
         </Flex>
-        <Flex basis="40px" style={{padding: 10}}>
+        <Flex basis="40px" style={{padding: 10, color: "red"}}>
           {this.state.error}
         </Flex>
       </Flex>
@@ -155,7 +155,8 @@ class App extends React.Component {
       const js = babel.transform(this.state.jsCode, {
         ast: false,
         filename: "repl-" + this.runCount,
-        sourceMaps: this.state.sourceMaps && useSourceMap ? "inline" : false
+        sourceMaps: this.state.sourceMaps && useSourceMap ? "inline" : false,
+        stage: 1
       });
       return { code: js.code, error: null };
     } catch (e) {
